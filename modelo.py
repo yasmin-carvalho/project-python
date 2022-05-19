@@ -2,7 +2,6 @@ from config import config
 from datetime import datetime
 from decimal import *
 from psycopg2.extensions import AsIs
-import psycopg2
 
 
 class Costumers():
@@ -28,7 +27,7 @@ class Employees():
 class Orders_details():
     def deletarorders_details(id):
         stringSQL = 'DELETE FROM northwind.order_details WHERE orderid = %s;'
-        status = config.alteraBD(config, stringSQL, [id])
+        config.alteraBD(config, stringSQL, [id])
 
 
 def shiperidTratamento(listaValores):
@@ -74,7 +73,7 @@ class Pedido():
             int(shiperidTratamento(listaValores)))
 
     def cadastraPedido(pedido):
-        string_sql = 'INSERT INTO northwind.orderns (orderid, customerid, employeeid, orderdate, requireddate, shippeddate, ' \
+        string_sql = 'INSERT INTO northwind.orders (orderid, customerid, employeeid, orderdate, requireddate, shippeddate, ' \
                      'freight, shipname, shipaddress, shipcity, shipregion, shippostalcode, shipcountry, shipperid ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
         novo_registro = (pedido.pedido, pedido.cliente, pedido.empregadoId, pedido.data, pedido.requisicao,
                          pedido.dataEnvio, pedido.frete, pedido.remetente, pedido.endereco, pedido.cidade, pedido.regiao,
@@ -111,6 +110,18 @@ class Pedido():
     def atualizavaloresupdate(l):
         string_sql = """UPDATE northwind.orders SET %s = %s WHERE orderid = %s"""
         parametros = ((AsIs(l[1])), int(l[2]), int(l[0]))
-
-        #status = config.alteraBD(config, string_sql, parametros)
-        # return status
+        if l[1] == 'customerid' or l[1] == 'employeeid':
+            try:
+                if l[1] == 'customerid':
+                    if Costumers.consultaCostumers(l[2]):
+                        raise clienteInvalido()
+                else:
+                    if Employees.consultaEmployees(l[2]):
+                        raise funcionarioInvalido()
+            except clienteInvalido:
+                return('Cliente não encontrado!')
+            except funcionarioInvalido:
+                return('Funcionário não encontrado!')
+            else:
+                status = config.alteraBD(config, string_sql, parametros)
+                return status

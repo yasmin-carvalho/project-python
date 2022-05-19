@@ -17,11 +17,15 @@ class config():
             # abrir a conexão
             conexao = psycopg2.connect(config.setParametros(self).dadosconexao)
 
-            # abrir a sessão - a transação começa aqui
+            # abrir a sessão - onde a transação começa
             sessao = conexao.cursor()
 
-            # Executar a inserção na memória RAM
+            # Executar a inserção na memória
+            print('Escrevendo no banco')
+            print(1, stringSQL)
+            print(2, valores)
             sessao.execute(stringSQL, valores)
+            print('Deu certo escrever no banco')
 
             # Comitar a inserção - fechar a transação
             conexao.commit()
@@ -29,7 +33,8 @@ class config():
             # Encerrar a sessão
             sessao.close()
 
-        except psycopg2.Error:
+        except psycopg2.Error as error:
+            print('Error', error)
             return psycopg2.Error
 
         finally:
@@ -44,7 +49,7 @@ class config():
             # abrir a conexão
             conexao = psycopg2.connect(config.setParametros(self).dadosconexao)
 
-            # abrir a sessão - a transação começa aqui
+            # abrir a sessão - onde a transaçaõ começa
             sessao = conexao.cursor()
 
             # Executar a consulta
