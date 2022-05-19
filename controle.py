@@ -29,7 +29,7 @@ class Controle:
 
             elif opcao == 4:
                 valores = view.coletaDadoUpdate()
-                status = Pedido.atualizavaloresupdate(valores)
+                status = Pedido.atualizaPedido(valores)
                 view.imprimeStatus(status)
                 opcao = view.inicio()
 

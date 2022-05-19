@@ -4,8 +4,8 @@ from decimal import *
 from psycopg2.extensions import AsIs
 
 
-class Costumers():
-    def consultaCostumers(id):
+class Custumers():
+    def consultaCustumers(id):
         stringSQL = 'SELECT * FROM northwind.customers WHERE customerid = %s;'
         registro = config.consultaBD(config, stringSQL, [id])
         if(len(registro[1]) != 0):
@@ -80,7 +80,7 @@ class Pedido():
                          pedido.postal, pedido.pais, pedido.remetenteId)
 
         try:
-            if Costumers.consultaCostumers(pedido.cliente):
+            if Custumers.consultaCustumers(pedido.cliente):
                 raise clienteInvalido()
             elif Employees.consultaEmployees(pedido.empregadoId):
                 raise funcionarioInvalido()
@@ -107,13 +107,13 @@ class Pedido():
         else:
             return None
 
-    def atualizavaloresupdate(l):
-        string_sql = """UPDATE northwind.orders SET %s = %s WHERE orderid = %s"""
-        parametros = ((AsIs(l[1])), int(l[2]), int(l[0]))
+    def atualizaPedido(l):
+        string_sql = 'UPDATE northwind.orders SET %s = %s WHERE orderid = %s'
+        parametros = ((AsIs(l[1])), str(l[2]), int(l[0]))
         if l[1] == 'customerid' or l[1] == 'employeeid':
             try:
                 if l[1] == 'customerid':
-                    if Costumers.consultaCostumers(l[2]):
+                    if Custumers.consultaCustumers(l[2]):
                         raise clienteInvalido()
                 else:
                     if Employees.consultaEmployees(l[2]):
@@ -125,3 +125,6 @@ class Pedido():
             else:
                 status = config.alteraBD(config, string_sql, parametros)
                 return status
+        else:
+            status = config.alteraBD(config, string_sql, parametros)
+            return status
